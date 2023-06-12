@@ -1,0 +1,441 @@
+Rlogin.html - 로그인화면
+
+
+document.getElementById("signup-button").addEventListener("click", function() {
+            var card = document.getElementsByClassName("card")[0];
+            card.classList.toggle("flipped");
+        });
+
+        document.getElementById("signup-button2").addEventListener("click", function() {
+            var card = document.getElementsByClassName("card")[0];
+            card.classList.toggle("flipped");
+        });
+
+자바스크립트를 활용하여 카드의 앞면 뒷면 형식처럼 앞면에는 로그인화면 버튼을 눌러
+뒤집으면 뒷면에는 회원가입 화면이 구성되게 하였습니다
+
+구분은 div class로 로그인 부분은 front로 감싸고 뒷면인 회원가입 부분은 back으로 감싸 구분하였습니다
+
+
+
+<form action="RloginCheck.php" method="post" enctype="multipart/form-data">
+을 통해 RloginCheck.php 를 활용하여 ID,PW값이 DB에 존재하는 것과 일치하는지 확인을 하고
+
+
+<form name = "frmInput" action="RmemberWrite.php" method="post" enctype="multipart/form-data">
+을 통해 회원가입 화면에서 입력한 정보들을 DB에 등록하게 하였습니다.
+
+
+if(document.frmInput.ID.value == "") {
+                alert("please check your ID.");
+                document.frmInput.ID.focus();
+                return false;
+            }
+과 같이 회원가입 화면에서 필수로 값을 입력하게 하였습니다.
+
+Rlogin.css - 로그인화면 css
+
+.card {
+    perspective: 1000px;
+    width: 350px;
+    height: 150px;
+
+}
+
+
+.front,
+.back {
+    backface-visibility: hidden;
+    transition: transform 0.8s;
+    width: 100%; 
+    height: 100%; 
+}
+
+.front {
+    z-index: 2;
+}
+
+.back {
+    transform: rotateY(180deg);
+    position: absolute;
+    top: 0;
+}
+
+.flip {
+    animation: flip-vertical-right 1s;
+}
+
+@keyframes flip-vertical-right {
+    0% {
+        transform: rotateY(0);
+    }
+    100% {
+        transform: rotateY(180deg);
+    }
+}
+
+
+.flipped .front {
+    transform: rotateY(180deg);
+}
+
+.flipped .back {
+    transform: rotateY(0deg);
+}
+
+위와 같은 코드를 사용해 카드를 앞면 뒷면으로 뒤집는걸 구현하였습니다
+
+
+RmemberWrite.php - 회원가입 시 DB에 정보등록
+
+post로 값을 보냈으니 name="" 에 해당하는 값을 post로 받고 그 값을 컬럼명에 맞게 DB에 등록하는 php 코드입니다
+Rlogin.html 에 앞면 뒷면을 나누어 로그인페이지와 회원가입페이지를 함께 넣었으므로 따로
+회원가입.html은 없습니다. 
+
+RloginCheck.php - 로그인 시 id,pw가 db에 있는 값과 일치하는지 확인하는 php
+
+$query = "select * from Rmember where Rmember_ID='$ID' and Rmember_PW='$PW'";
+위와 같은 방법으로 id,pw를 확인하고
+
+if($ID == $row['Rmember_ID'] && $PW == $row['Rmember_PW'])
+추가적으로 if문을 활용하여 로그인 성공할 시 로그인 성공화면을 1.5초 띄우고 메인화면으로
+
+실패시(else) 실패화면을 1.5초 띄우고 로그인화면으로 돌아가게 만들었습니다.
+
+
+Rmain.html - 메인메뉴 화면
+
+ <a href="Rsrch.html"><button>라면 조리하기</button></a>
+    <button class="button" onclick="openModal()">라면랜덤추천</button>
+    <a href="Rlogin.html"><button>로그아웃</button></a>
+  </div>
+버튼 3개를 만들었고 2개의 버튼은 href를 이용해 지정주소로 이동하고
+라면랜덤추천 이라는 버튼은 자바스크립트를 이용해 해당 페이지에서 모달창이 출력되게 만들었습니다.
+
+
+function openModal() {
+  var modalOverlay = document.getElementById("modalOverlay");
+  var ramenImage = document.getElementById("ramenImage");
+
+  modalOverlay.style.display = "flex";
+  modalOverlay.classList.add("slide-in");
+  ramenImage.style.display = "none"; 
+  var modalContent = document.querySelector(".modal-content");
+  modalContent.classList.add("open");
+}
+
+
+    function closeModal() {
+      var modalOverlay = document.getElementById("modalOverlay");
+      modalOverlay.classList.remove("slide-in");
+      modalOverlay.classList.add("slide-out");
+      setTimeout(function() {
+        modalOverlay.style.display = "none";
+        modalOverlay.classList.remove("slide-out");
+        var modalContent = document.querySelector(".modal-content");
+        modalContent.classList.remove("open");
+      }, 500);
+    }
+
+    function pickRamen() {
+  var ramenResult = document.getElementById("ramenResult");
+  var ramenImage = document.getElementById("ramenImage");
+
+  ramenResult.textContent = "";
+  ramenImage.style.display = "block"; 
+
+  $.ajax({
+    url: 'Rrec.php',
+    type: 'get',
+    dataType: 'json',
+    success: function(data) {
+      ramenResult.textContent = data.Rinfo_Rname;
+      ramenImage.src = data.Rinfo_img;
+      ramenImage.style.display = "block";
+    },
+    error: function(e) {
+      alert("랜덤 라면 선택에 실패했습니다.");
+    }
+  });
+}
+
+모달창 구현 코드이고 모달창을 열고 모달창 내에 있는 라면뽑기 버튼을 누르면
+다음과 같은 php코드를 활용하여
+
+
+
+$query = "SELECT Rinfo_Rname, Rinfo_img FROM Rinfo ORDER BY RAND() LIMIT 1";
+$result = $conn->query($query);
+
+if ($result->num_rows > 0) {
+  $row = $result->fetch_assoc();
+  $ramenName = $row['Rinfo_Rname'];
+  $ramenImg = $row['Rinfo_img'];
+
+  $response = array('Rinfo_Rname' => $ramenName, 'Rinfo_img' => $ramenImg);
+  echo json_encode($response);
+
+랜덤으로 같은 레코드에 있는 name과img 컬럼값을 Rand()함수를 이용하여 랜덤으로 출력합니다
+
+그 값을 
+
+$query = "SELECT Rinfo_Rname, Rinfo_img FROM Rinfo ORDER BY RAND() LIMIT 1";
+$result = $conn->query($query);
+
+if ($result->num_rows > 0) {
+  $row = $result->fetch_assoc();
+  $ramenName = $row['Rinfo_Rname'];
+  $ramenImg = $row['Rinfo_img'];
+
+  $response = array('Rinfo_Rname' => $ramenName, 'Rinfo_img' => $ramenImg);
+  echo json_encode($response);
+
+ajax방식을 활용하여 받고 화면에 출력합니다
+
+
+
+Rrec.php - 라면추천 랜덤뽑기.php
+
+<?php
+$host = 'localhost';
+$user = 'philseung';
+$pw = '1234';
+$dbName = 'test';
+
+$conn = new mysqli($host, $user, $pw, $dbName);
+if ($conn->connect_error) {
+  die('Connection failed: ' . $conn->connect_error);
+}
+
+$query = "SELECT Rinfo_Rname, Rinfo_img FROM Rinfo ORDER BY RAND() LIMIT 1";
+$result = $conn->query($query);
+
+if ($result->num_rows > 0) {
+  $row = $result->fetch_assoc();
+  $ramenName = $row['Rinfo_Rname'];
+  $ramenImg = $row['Rinfo_img'];
+
+  $response = array('Rinfo_Rname' => $ramenName, 'Rinfo_img' => $ramenImg);
+  echo json_encode($response);
+} else {
+  echo "No ramen found.";
+}
+
+$conn->close();
+?>
+
+위에서 설명한 랜덤으로 값을 뽑기 위해 사용된 php코드입니다
+
+
+Rsrch.html = 타이머기능을 이용하기 전에 라면을 고르는 페이지입니다
+
+
+그 전에 다음과 같은 Rcall.php 를 활용하여 DB에 등록되어 있는 라면이름.요약정보.이미지를 읽어왔습니다.
+
+Rcall.php = db에서 값을 읽어오는 php 코드
+
+<?php
+$host = 'localhost';
+$user = 'philseung';
+$pw = '1234';
+$dbName = 'test';
+$mysqli = new mysqli($host, $user, $pw, $dbName);
+
+$Rinfo_Rname = $_GET['Rinfo_Rname']; // Rinfo_Rname 값을 GET 파라미터로 받아옴
+
+$sql = "SELECT * FROM Rinfo WHERE Rinfo_Rname = '$Rinfo_Rname'";
+$result = mysqli_query($mysqli, $sql);
+
+$row = mysqli_fetch_assoc($result);
+
+$myObj = new stdClass();
+
+$myObj->Rinfo_Rname = $row['Rinfo_Rname'];
+$myObj->Rinfo_soup = $row['Rinfo_soup'];
+$myObj->Rinfo_spicy = $row['Rinfo_spicy'];
+$myObj->Rinfo_sum = $row['Rinfo_sum'];
+$myObj->Rinfo_option_AC_time = $row['Rinfo_option_AC_time'];
+$myObj->Rinfo_option_AD_time = $row['Rinfo_option_AD_time'];
+$myObj->Rinfo_option_BC_time = $row['Rinfo_option_BC_time'];
+$myObj->Rinfo_option_BD_time = $row['Rinfo_option_BD_time'];
+$myObj->Rinfo_img = $row['Rinfo_img'];
+
+$myObj->Rinfo_img_url = 'images/' . $row['Rinfo_img'];
+
+$myJSON = json_encode($myObj);
+
+echo $myJSON;
+?>
+
+여기서 중요한 건 라면이름,이미지,요약정보를 가져올 때 3개의 값이 같은 레코드에 존재해야 한다는 것인데
+그 기준을 정하기 위해 Rname값을 받아왔습니다
+
+$Rinfo_Rname = $_GET['Rinfo_Rname']; // Rinfo_Rname 값을 GET 파라미터로 받아옴
+
+$sql = "SELECT * FROM Rinfo WHERE Rinfo_Rname = '$Rinfo_Rname'";
+
+
+다시 Rsrch.html 로 돌아가겠습니다.
+Rcall.php코드와 
+
+function Rname(rname) {
+      // Rname을 가져오기 위한 AJAX 요청
+      var Temp;
+      $.ajax({
+        url: 'Rcall.php',
+        type: 'get',
+        data: { Rinfo_Rname: rname },
+        dataType: 'json',
+        async: false,
+        success: function(data) {
+          Temp = data.Rinfo_Rname;
+        },
+        error: function(e) {
+          alert("");
+        }
+      });
+      return Temp;
+    }
+
+이와 같은 ajax 방식을 활용하여 라면이름,요약정보,이미지를 받아왔습니다.
+
+그리고 원하는 라면을 빨리 찾기 위해 검색기능을 추가하였습니다
+
+ function search() {
+      // 검색 기능
+      var keyword = $('#search-input').val().toLowerCase();
+      $('.ramen-item').each(function() {
+        var rname = $(this).data('rname').toLowerCase();
+        if (rname.includes(keyword)) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    }
+
+    function clearSearch() {
+      // 검색어 초기화
+      $('#search-input').val('');
+      $('.ramen-item').show();
+    }
+
+빠른 검색을 위해 keyup을 활용하여 타자를 누를 때 마다 검색을 하게 만들었습니다.
+
+그렇게 받아온 컬럼값들은
+
+<div id="ramen-container">
+      <div class="ramen-item" data-rname="틈새라면">
+        <h3><script>document.write(Rname('틈새라면'))</script></h3>
+        <p><script>document.write(Rsum('틈새라면'))</script></p>
+        <p><img src="" alt="라면 이미지" id="ramen-image"></p>
+      </div>
+
+다음과 같이 스크롤바 내에 이름,요약정보,이미지를 표시하는 버튼으로 구성하였으며
+이 버튼을 클릭할 시 해당 라면의 타이머로 이동합니다
+
+
+그리고 사용자가 고른 라면이름을 다음 화면에서 볼 수 있게
+
+function navigateToRtime(rname) {
+      // Rtime.html로 이동하고 선택한 라면의 이름을 전달
+      window.location.href = 'Rtime.html?ramenName=' + rname;
+    }
+
+    $(document).ready(function() {
+      $('#search-input').on('input', search);
+
+      $('.ramen-item').click(function() {
+        // ramen-item 클릭 시 해당 라면의 Rinfo_Rname을 가져와서 Rtime.html로 이동
+        var rname = $(this).data('rname');
+        navigateToRtime(Rname(rname));
+
+이와 같은 코드를 추가적으로 사용하였습니다.
+
+
+
+Rtime.html = 주기능인 타이머 화면입니다
+
+원래는 처음부터 Rinfo라는 테이블에 라면이름,요약정보,이미지 뿐만이 아니라 라면을 분류할 카테고리,라디오버튼 조합에 따른 시간 값까지 등록을 하였지만 기능 구현을 하지 못하였습니다.
+
+먼저 상단에 선택한 라면 이름이 나오고
+
+<div>
+      <input type="radio" name="optionA" value="A" onclick="updateTime()">꼬들면
+      <input type="radio" name="optionA" value="B" onclick="updateTime()">불은면
+    </div>
+    <br>
+    <div>
+      <input type="radio" name="optionB" value="C" onclick="updateTime()">컵라면
+      <input type="radio" name="optionB" value="D" onclick="updateTime()">봉지라면
+    </div>
+
+다음과 같이 꼬들면&불은면	컵라면&봉지라면	선택을하는 라디오 버튼이 나옵니다.
+이 라디오버튼을 어떻게 선택하냐에 따라 각 라면마다 값이 모두 다릅니다.
+그렇게 선택을 해 나온 시간은 라면을 맛있게 먹을 수 있는 최적의 시간이 출력되고
+일반적인 타이머처럼 사용을 하면 됩니다.
+
+
+원래는 db에서 불러오려 했으나 구현을 못해
+
+var ramenInfo = {
+      '틈새라면': {
+        'AC': { time: '2:30' },
+        'AD': { time: '3:00' },
+        'BC': { time: '3:30' },
+        'BD': { time: '4:00' }
+      },
+      '열라면': {
+        'AC': { time: '2:40' },
+        'AD': { time: '3:00' },
+        'BC': { time: '3:40' },
+        'BD': { time: '4:20' }
+      },
+      '참깨라면': {
+        'AC': { time: '2:20' },
+        'AD': { time: '2:40' },
+        'BC': { time: '3:45' },
+        'BD': { time: '4:00' }
+      },
+      '진라면 순한맛': {
+        'AC': { time: '2:20' },
+        'AD': { time: '2:40' },
+        'BC': { time: '3:50' },
+        'BD': { time: '4:20' }
+      },
+      '불닭볶음면': {
+        'AC': { time: '2:40' },
+        'AD': { time: '3:00' },
+        'BC': { time: '4:40' },
+        'BD': { time: '5:10' }
+      },
+      '까르보 불닭볶음면': {
+        'AC': { time: '2:50' },
+        'AD': { time: '3:10' },
+        'BC': { time: '4:50' },
+        'BD': { time: '5:20' }
+      },
+      '짜파게티': {
+        'AC': { time: '3:30' },
+        'AD': { time: '4:00' },
+        'BC': { time: '4:40' },
+        'BD': { time: '5:00' }
+      },
+      '팔도비빔면': {
+        'AC': { time: '2:20' },
+        'AD': { time: '2:40' },
+        'BC': { time: '2:50' },
+        'BD': { time: '3:10' }
+      }
+    };
+
+이렇게 직접 라디오버튼 조합에 따른 값을 설정하였습니다
+
+그리고 자바스크립트를 이용해 타이머를 만들고
+
+마지막으로 편하게 메인메뉴로 갈 수 있게 홈 버튼을 제작하였습니다
+
+div class="BG" style="background-color: #FFDC7E; position: relative;">
+    <a href="Rmain.html" style="position: absolute; top: 10px; right: 10px; text-decoration: none; color: #000;">
+      <i class="fas fa-home"></i>
+    </a>
