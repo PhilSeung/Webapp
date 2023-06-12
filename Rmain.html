@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Gamja+Flower');
+        
+    @font-face {
+        font-family : swg;
+        
+        src: url(fonts/swagger.eot);
+        src: local( ※ ) ,
+            url( fonts/swagger.woff ) format('woff') ,
+            url( fonts/swagger.ttf) format('truetype')
+    }
+
+    * {
+        font-family: 'Gamja Flower', cursive;
+        font-size: 22px;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        flex-direction: column;
+    }
+
+    button {
+        width: 200px;
+        height: 40px;
+        background-color: #ff9800;
+        font-size: 30px;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 30px;
+    }
+
+    button:hover {
+        background-color: #f57c00;
+    }
+
+    body {
+        background-image: url('images/ramenBG.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        font-size: 26px;
+        background-color: #FFDC7E;
+        padding: 20px;
+        border-radius: 5px;
+        width: 600px;
+        height: 500px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content h2 {
+        font-size: 30px;
+    }
+
+    .modal-content h3#ramenResult {
+  font-size: 32px; /* 라면 이름의 원하는 크기로 수정 */
+}
+
+.modal-content img#ramenImage {
+  width: 200px; /* 이미지의 원하는 가로 크기로 수정 */
+  height: 200px; /* 이미지의 원하는 세로 크기로 수정 */
+}
+
+    .modal-button {
+        margin-top: 20px;
+        width: 170px;
+        height: 30px;
+        background-color: #ff9800;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .modal-button:hover {
+        background-color: #f57c00;
+    }
+
+    .BG {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #FFDC7E;
+    padding: 50px;
+    border-radius: 10px;
+    margin-top: -150px;
+    height: 700px;
+    width: 300px;
+}
+
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
+
+    .slide-in {
+        animation: slide-in 0.5s ease-in-out;
+    }
+
+    .slide-out {
+        animation: slide-out 0.5s ease-in-out;
+    }
+
+    @keyframes slide-in {
+        0% {
+            transform: translateY(-100%);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slide-out {
+        0% {
+            transform: translateY(0);
+        }
+        100% {
+            transform: translateY(-100%);
+        }
+    }
+    .image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  width: 100px;
+  height: 240px;
+}
+  </style>
+</head>
+<body>
+  <div class="BG">
+  <div class="button-container">
+    <a href="Rsrch.html"><button>라면 조리하기</button></a>
+    <button class="button" onclick="openModal()">라면랜덤추천</button>
+    <a href="Rlogin.html"><button>로그아웃</button></a>
+  </div>
+  <div class="image-container">
+    <img id="ramencartoon" src="images/라면그림1.png" alt="Ramen Image" width="260px" height="260px">
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal()">&times;</span>
+      <h2>오늘은 이거다!</h2>
+      <h3 id="ramenResult"></h3>
+      <img id="ramenImage" src="" alt="Ramen Image"> 
+      <button class="modal-button" onclick="pickRamen()">라면뽑기</button>
+    </div>
+  </div>
+</div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script>
+    function openModal() {
+  var modalOverlay = document.getElementById("modalOverlay");
+  var ramenImage = document.getElementById("ramenImage");
+
+  modalOverlay.style.display = "flex";
+  modalOverlay.classList.add("slide-in");
+  ramenImage.style.display = "none"; 
+  var modalContent = document.querySelector(".modal-content");
+  modalContent.classList.add("open");
+}
+
+
+    function closeModal() {
+      var modalOverlay = document.getElementById("modalOverlay");
+      modalOverlay.classList.remove("slide-in");
+      modalOverlay.classList.add("slide-out");
+      setTimeout(function() {
+        modalOverlay.style.display = "none";
+        modalOverlay.classList.remove("slide-out");
+        var modalContent = document.querySelector(".modal-content");
+        modalContent.classList.remove("open");
+      }, 500);
+    }
+
+    function pickRamen() {
+  var ramenResult = document.getElementById("ramenResult");
+  var ramenImage = document.getElementById("ramenImage");
+
+  ramenResult.textContent = "";
+  ramenImage.style.display = "block"; 
+
+  $.ajax({
+    url: 'Rrec.php',
+    type: 'get',
+    dataType: 'json',
+    success: function(data) {
+      ramenResult.textContent = data.Rinfo_Rname;
+      ramenImage.src = data.Rinfo_img;
+      ramenImage.style.display = "block";
+    },
+    error: function(e) {
+      alert("랜덤 라면 선택에 실패했습니다.");
+    }
+  });
+}
+
+  </script>
+</body>
+</html>

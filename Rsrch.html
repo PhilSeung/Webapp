@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta content="" name="keywords">
+  <meta content="" name="description">
+  <title>검색 기능 구현 예시</title>
+  <style>
+
+    @import url('https://fonts.googleapis.com/css?family=Gamja+Flower');
+        
+        @font-face {
+            font-family : swg;
+            
+            src: url(fonts/swagger.eot);
+            src: local( ※ ) ,
+                url( fonts/swagger.woff ) format('woff') ,
+                url( fonts/swagger.ttf) format('truetype')
+        }
+
+        
+        * {
+            font-family: 'Gamja Flower', cursive;
+            font-size: 22px;
+        }
+
+        body {
+        background-image: url('images/ramenBG.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 100vh;
+}
+    .BG {
+  position: fixed;
+  top: 44%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #FFDC7E;
+  padding: 50px;
+  border-radius: 10px;
+  height: 700px;
+  width: 600px;
+}
+
+
+    #search-container {
+      text-align: center;
+      margin-top: 100px;
+    }
+
+    #search-input {
+      width: 300px;
+      height: 30px;
+      margin-bottom: 10px;
+    }
+
+    #search-results {
+      width: 520px;
+      height: 320px;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      overflow-y: auto;
+    }
+
+    #ramen-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 520px;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      height: 420px;
+    }
+
+    .ramen-item {
+      width: 100%;
+      background-color: #FF8224;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .ramen-item img {
+      float: left;
+      width: 100px;
+      height: 100px;
+    }
+
+    .ramen-item:hover {
+      cursor: pointer;
+    }
+
+    .search-button {
+      background-color: #FF8224;
+      border-radius: 5px;
+    }
+
+    .clear-button {
+      background-color: #FF8224;
+      border-radius: 5px;
+    }
+
+
+    ::-webkit-scrollbar {
+    width: 10px;
+    background-color: #FF8224;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #DB3A00;
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #A50400;
+  }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script>
+    function Rname(rname) {
+      // Rname을 가져오기 위한 AJAX 요청
+      var Temp;
+      $.ajax({
+        url: 'Rcall.php',
+        type: 'get',
+        data: { Rinfo_Rname: rname },
+        dataType: 'json',
+        async: false,
+        success: function(data) {
+          Temp = data.Rinfo_Rname;
+        },
+        error: function(e) {
+          alert("");
+        }
+      });
+      return Temp;
+    }
+
+    function Rsum(rname) {
+      // Rsum을 가져오기 위한 AJAX 요청
+      var Temp;
+      $.ajax({
+        url: 'Rcall.php',
+        type: 'get',
+        data: { Rinfo_Rname: rname },
+        dataType: 'json',
+        async: false,
+        success: function(data) {
+          Temp = data.Rinfo_sum;
+        },
+        error: function(e) {
+          alert("");
+        }
+      });
+      return Temp;
+    }
+
+    $(document).ready(function() {
+  $('.ramen-item').each(function() {
+    var rname = $(this).data('rname');
+    var imgElement = $(this).find('#ramen-image');
+    
+   
+    $.ajax({
+      url: 'Rcall.php',
+      type: 'get',
+      data: { Rinfo_Rname: rname },
+      dataType: 'json',
+      success: function(data) {
+        var imageUrl = data.Rinfo_img;
+        imgElement.attr('src', imageUrl);
+      },
+      error: function(e) {
+        alert("");
+      }
+    });
+  });
+});
+
+
+
+    function search() {
+      // 검색 기능
+      var keyword = $('#search-input').val().toLowerCase();
+      $('.ramen-item').each(function() {
+        var rname = $(this).data('rname').toLowerCase();
+        if (rname.includes(keyword)) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    }
+
+    function clearSearch() {
+      // 검색어 초기화
+      $('#search-input').val('');
+      $('.ramen-item').show();
+    }
+
+    function navigateToRtime(rname) {
+      // Rtime.html로 이동하고 선택한 라면의 이름을 전달
+      window.location.href = 'Rtime.html?ramenName=' + rname;
+    }
+
+    $(document).ready(function() {
+      $('#search-input').on('input', search);
+
+      $('.ramen-item').click(function() {
+        // ramen-item 클릭 시 해당 라면의 Rinfo_Rname을 가져와서 Rtime.html로 이동
+        var rname = $(this).data('rname');
+        navigateToRtime(Rname(rname));
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="BG">
+    <div id="search-container">
+      <input type="text" id="search-input" placeholder="검색어를 입력하세요">
+      <button class="search-button" onclick="search()">검색</button>
+      <button class="clear-button" onclick="clearSearch()">초기화</button>
+    </div>
+
+    <div id="ramen-container">
+      <div class="ramen-item" data-rname="틈새라면">
+        <h3><script>document.write(Rname('틈새라면'))</script></h3>
+        <p><script>document.write(Rsum('틈새라면'))</script></p>
+        <p><img src="" alt="라면 이미지" id="ramen-image"></p>
+      </div>
+      <div class="ramen-item" data-rname="열라면">
+        <h3><script>document.write(Rname('열라면'))</script></h3>
+        <p><script>document.write(Rsum('열라면'))</script></p>
+        <p><img src="" alt="라면 이미지" id="ramen-image"></p>
+      </div>
+      <div class="ramen-item" data-rname="참깨라면">
+        <h3><script>document.write(Rname('참깨라면'))</script></h3>
+        <p><script>document.write(Rsum('참깨라면'))</script></p>
+        <p><img src="" alt="라면 이미지" id="ramen-image"></p>
+      </div>
+      <div class="ramen-item" data-rname="진라면 순한맛">
+        <h3><script>document.write(Rname('진라면 순한맛'))</script></h3>
+        <p><script>document.write(Rsum('진라면 순한맛'))</script></p>
+        <p><img src="" alt="라면 이미지" id="ramen-image"></p>
+      </div>
+      <div class="ramen-item" data-rname="불닭볶음면">
+        <h3><script>document.write(Rname('불닭볶음면'))</script></h3>
+        <p><script>document.write(Rsum('불닭볶음면'))</script></p>
+        <p><img src="" alt="라면 이미지" id="ramen-image"></p>
+      </div>
+      <div class="ramen-item" data-rname="까르보 불닭볶음면">
+        <h3><script>document.write(Rname('까르보 불닭볶음면'))</script></h3>
+        <p><script>document.write(Rsum('까르보 불닭볶음면'))</script></p>
+        <p><img src="" alt="라면 이미지" id="ramen-image"></p>
+      </div>
+      <div class="ramen-item" data-rname="짜파게티">
+        <h3><script>document.write(Rname('짜파게티'))</script></h3>
+        <p><script>document.write(Rsum('짜파게티'))</script></p>
+        <p><img src="" alt="라면 이미지" id="ramen-image"></p>
+      </div>
+      <div class="ramen-item" data-rname="팔도비빔면">
+        <h3><script>document.write(Rname('팔도비빔면'))</script></h3>
+        <p><script>document.write(Rsum('팔도비빔면'))</script></p>
+        <p><img src="" alt="라면 이미지" id="ramen-image"></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

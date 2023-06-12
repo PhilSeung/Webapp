@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>라면데이터입력</title>
+    <script language="javascript">
+        function Input()
+        {
+            document.frmInput.submit();
+        }
+
+    </script>
+</head>
+<body>
+                        
+    <form name="frmInput" action="RdataWrite.php" method="post" enctype="multipart/form-data">
+        
+        <h4>라면 데이터 입력</h4>
+        
+        <label for="Rname">라면이름</label>
+        <input type="text" name="Rname" id="Rname" required>
+        <br>   
+        <label for="soup">국물유무</label>
+        <input type="text" name="soup" id="soup" required>
+        <br>
+        <label for="spicy">매운가요?</label>
+        <input type="text" name="spicy" id="spicy" required>
+        <br>
+        <label for="sum">요약정보</label>
+        <input type="text" name="sum" id="sum" required> 
+        <br>
+        <label for="option_AC_time">컵꼬들</label>
+        <input type="text" name="option_AC_time" id="option_AC_time" required>
+        <br>
+        <label for="option_AD_time">컵불은</label>
+        <input type="text" name="option_AD_time" id="option_AD_time" required>
+        <br>
+        <label for="option_BC_time">봉지꼬들</label>
+        <input type="text" name="option_BC_time" id="option_BC_time" required>
+        <br>
+        <label for="option_BD_time">봉지불은</label>
+        <input type="text" name="option_BD_time" id="option_BD_time" required>
+        <br>
+    
+        <button type="button" onclick="Input()">데이터 입력</button>
+    </form>
+   
+</body>
+</html>

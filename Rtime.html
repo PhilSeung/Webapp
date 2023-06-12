@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>타이머</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Gamja+Flower');
+        @font-face {
+        font-family : swg;
+        
+        src: url(fonts/swagger.eot);
+        src: local( ※ ) ,
+            url( fonts/swagger.woff ) format('woff') ,
+            url( fonts/swagger.ttf) format('truetype')
+    }
+
+    
+    * {
+        font-family: 'Gamja Flower', cursive;
+        font-size: 22px;
+    }
+body {
+background-image: url('images/ramenBG.jpg');
+background-size: cover;
+background-repeat: no-repeat;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+}
+
+.container {
+text-align: center;
+}
+
+input[type="radio"],
+button {
+margin: 5px;
+}
+h2 {
+  font-size: 40px;
+}
+
+#timer {
+font-size: 24px;
+font-weight: bold;
+margin-top: 20px;
+}
+
+.center {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+
+.BG {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #FFDC7E;
+    padding: 50px;
+    border-radius: 10px;
+    margin-top: -150px;
+    height: 700px;
+    width: 300px;
+}
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  width: 100px;
+  height: 320px;
+}
+.tbtn {
+  background-color: #FF8224;
+      border-radius: 5px;
+}
+
+  </style>
+</head>
+<body>
+  <div class="BG" style="background-color: #FFDC7E; position: relative;">
+    <a href="Rmain.html" style="position: absolute; top: 10px; right: 10px; text-decoration: none; color: #000;">
+      <i class="fas fa-home"></i>
+    </a>
+  <div class="center">
+    <h2 id="ramenName"></h2>
+    <br>
+    <div>
+      <input type="radio" name="optionA" value="A" onclick="updateTime()">꼬들면
+      <input type="radio" name="optionA" value="B" onclick="updateTime()">불은면
+    </div>
+    <br>
+    <div>
+      <input type="radio" name="optionB" value="C" onclick="updateTime()">컵라면
+      <input type="radio" name="optionB" value="D" onclick="updateTime()">봉지라면
+    </div>
+    <br>
+    <div>
+      <button class ="tbtn" id="startButton" onclick="startOrPauseTimer()">시작</button>
+      <button class ="tbtn" onclick="resetTimer()">초기화</button>
+    </div>
+    <div id="timer" style="font-size: 60px;">00:00</div>
+    <div class="image-container">
+    <img id="ramencartoon" src="images/라면그림3.png" alt="Ramen Image" width="260px" height="260px">
+  </div>
+  </div>
+</div>
+  <script>
+    // URL 매개변수에서 선택한 라면의 이름과 조합 값을 추출
+    var urlParams = new URLSearchParams(window.location.search);
+    var ramenName = urlParams.get('ramenName');
+    var optionA = '';
+    var optionB = '';
+
+    // 라면 정보와 조합에 따른 시간 값 설정
+    var ramenInfo = {
+      '틈새라면': {
+        'AC': { time: '2:30' },
+        'AD': { time: '3:00' },
+        'BC': { time: '3:30' },
+        'BD': { time: '4:00' }
+      },
+      '열라면': {
+        'AC': { time: '2:40' },
+        'AD': { time: '3:00' },
+        'BC': { time: '3:40' },
+        'BD': { time: '4:20' }
+      },
+      '참깨라면': {
+        'AC': { time: '2:20' },
+        'AD': { time: '2:40' },
+        'BC': { time: '3:45' },
+        'BD': { time: '4:00' }
+      },
+      '진라면 순한맛': {
+        'AC': { time: '2:20' },
+        'AD': { time: '2:40' },
+        'BC': { time: '3:50' },
+        'BD': { time: '4:20' }
+      },
+      '불닭볶음면': {
+        'AC': { time: '2:40' },
+        'AD': { time: '3:00' },
+        'BC': { time: '4:40' },
+        'BD': { time: '5:10' }
+      },
+      '까르보 불닭볶음면': {
+        'AC': { time: '2:50' },
+        'AD': { time: '3:10' },
+        'BC': { time: '4:50' },
+        'BD': { time: '5:20' }
+      },
+      '짜파게티': {
+        'AC': { time: '3:30' },
+        'AD': { time: '4:00' },
+        'BC': { time: '4:40' },
+        'BD': { time: '5:00' }
+      },
+      '팔도비빔면': {
+        'AC': { time: '2:20' },
+        'AD': { time: '2:40' },
+        'BC': { time: '2:50' },
+        'BD': { time: '3:10' }
+      }
+    };
+
+    function updateTime() {
+      // 선택한 조합에 따른 시간 갱신
+      optionA = document.querySelector('input[name="optionA"]:checked').value;
+      optionB = document.querySelector('input[name="optionB"]:checked').value;
+
+      var time = ramenInfo[ramenName][optionA + optionB].time;
+      document.getElementById('timer').innerText = time;
+
+      // 타이머 설정
+      var timeParts = time.split(':');
+      timerDuration = parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
+    }
+
+    var startTime = null;
+    var pausedTime = 0;
+    var timerRunning = false;
+    var intervalId = null;
+    var timerDisplay = document.getElementById('timer');
+    var timerDuration = 0;
+
+    function startOrPauseTimer() {
+      if (timerRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function startTimer() {
+      // 타이머 시작 시간 설정
+      startTime = Date.now();
+
+      // 타이머 동작 상태로 설정
+      timerRunning = true;
+
+      // 타이머 업데이트 함수 호출
+      updateTimer();
+
+      // setInterval 시작
+      intervalId = setInterval(updateTimer, 1000);
+
+      // 시작 버튼 텍스트 변경
+      var startButton = document.getElementById('startButton');
+      startButton.textContent = '일시정지';
+    }
+
+    function pauseTimer() {
+      if (timerRunning) {
+        // 일시정지된 시간 계산
+        var currentTime = Date.now();
+        pausedTime += currentTime - startTime;
+
+        // 타이머 동작 상태 변경
+        timerRunning = false;
+
+        // clearInterval 호출
+        clearInterval(intervalId);
+
+        // 시작 버튼 텍스트 변경
+        var startButton = document.getElementById('startButton');
+        startButton.textContent = '재개';
+      }
+    }
+
+    function resetTimer() {
+      // 타이머 초기화
+      startTime = null;
+      pausedTime = 0;
+      timerRunning = false;
+      timerDuration = 0;
+
+      // 타이머 출력 초기화
+      timerDisplay.textContent = '00:00';
+
+      // clearInterval 호출
+      clearInterval(intervalId);
+
+      // 시작 버튼 텍스트 변경
+      var startButton = document.getElementById('startButton');
+      startButton.textContent = '시작';
+    }
+
+    function updateTimer() {
+      // 현재 시간 계산
+      var currentTime = Date.now();
+      var elapsedTime = Math.floor((currentTime - startTime + pausedTime) / 1000);
+
+      // 남은 시간 계산
+      var remainingTime = timerDuration - elapsedTime;
+
+      // 타이머 종료 시 처리
+      if (remainingTime <= 0) {
+        stopTimer();
+        return;
+      }
+
+      // 분, 초 계산
+      var minutes = Math.floor(remainingTime / 60);
+      var seconds = remainingTime % 60;
+      var minutesStr = minutes < 10 ? '0' + minutes : minutes;
+      var secondsStr = seconds < 10 ? '0' + seconds : seconds;
+
+      // 타이머 출력 업데이트
+      timerDisplay.textContent = minutesStr + ':' + secondsStr;
+    }
+
+    // 라면 이름 설정
+    document.getElementById('ramenName').innerText = ramenName;
+    updateTime();
+  </script>
+</body>
+</html>
